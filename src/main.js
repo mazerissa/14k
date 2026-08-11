@@ -1,9 +1,9 @@
 import { router } from "./engine/router.js";
+import { generator } from "./engine/generator.js";
 
 const app = document.getElementById("app");
 
-// Call the imported router function
 const route = router();
+const page = generator(route);
 
-// Render the route object as formatted JSON for testing
-app.textContent = JSON.stringify(route, null, 2);
+app.textContent = JSON.stringify(page, null, 2);
