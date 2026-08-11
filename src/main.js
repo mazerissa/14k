@@ -1,10 +1,9 @@
-import { router } from "./engine/router.js";
-import { generator } from "./engine/generator.js";
-import { renderer } from "./engine/renderer.js";
+import {
+    initializeNavigation,
+    renderCurrentRoute
+} from "./engine/navigation.js";
 
-const app = document.getElementById("app");
 
-const route = router();
-const page = generator(route);
+initializeNavigation();
 
-renderer(page, app);
+renderCurrentRoute();
