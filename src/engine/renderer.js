@@ -1,58 +1,46 @@
+import { element, text, append } from "./dom.js";
+
+import {
+    Hero,
+    TextSection,
+    NotFound
+} from "./components.js";
+
+
 export function renderer(page, app) {
     app.innerHTML = "";
 
-    const pageElement = document.createElement("main");
-    pageElement.className = "page";
+    const main = element("main", "page");
 
-    const title = document.createElement("h1");
-    title.textContent = page.title;
+    const title = text("h1", page.title);
 
-    pageElement.appendChild(title);
+    append(main, title);
 
     for (const section of page.sections) {
-        renderSection(section, pageElement);
+        renderSection(section, main);
     }
 
-    app.appendChild(pageElement);
+    app.append(main);
 }
+
 
 function renderSection(section, parent) {
     switch (section.type) {
         case "hero":
-            renderHero(section, parent);
+            parent.append(Hero(section));
             break;
 
         case "text":
-            renderText(section, parent);
+            parent.append(TextSection(section));
+            break;
+
+        case "404": // 404 for when u mess ts up
+            parent.append(NotFound());
             break;
 
         default:
-            console.warn(`Unknown section type: ${section.type}`);
+            console.warn(
+                `you f..ked up ts: ${section.type}`
+            );
     }
-}
-
-function renderHero(section, parent) {
-    const hero = document.createElement("section");
-    hero.className = "hero";
-
-    const heading = document.createElement("h2");
-    heading.textContent = section.title;
-
-    hero.appendChild(heading);
-    parent.appendChild(hero);
-}
-
-function renderText(section, parent) {
-    const sectionElement = document.createElement("section");
-
-    const heading = document.createElement("h2");
-    heading.textContent = section.title;
-
-    const paragraph = document.createElement("p");
-    paragraph.textContent = section.content;
-
-    sectionElement.appendChild(heading);
-    sectionElement.appendChild(paragraph);
-
-    parent.appendChild(sectionElement);
 }
