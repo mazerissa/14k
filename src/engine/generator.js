@@ -1,5 +1,4 @@
 export function generator(route) {
-
     switch (route.name) {
         case "home":
             return {
