@@ -1,97 +1,32 @@
+import { pages } from "../content/pages.js";
+import { projects } from "../content/projects.js";
+
+
 export function generator(route) {
     switch (route.name) {
         case "home":
-            return {
-                type: "page",
-                title: "Home",
-                sections: [
-                    {
-                        type: "hero",
-                        title: "bomboclatt"
-                    }
-                ]
-            };
+            return pages.home;
 
         case "about":
-            return {
-                type: "page",
-                title: "About",
-                sections: [
-                    {
-                        type: "text",
-                        title: "About Me",
-                        content: "This is the about page."
-                    }
-                ]
-            };
+            return pages.about;
 
         case "projects":
-            return {
-                type: "page",
-                title: "Projects",
-                sections: [
-                    {
-                        type: "project-list"
-                    }
-                ]
-            };
+            return generateProjectsPage();
 
         case "project":
-            return {
-                type: "page",
-                title: route.id,
-                sections: [
-                    {
-                        type: "project",
-                        id: route.id
-                    }
-                ]
-            };
+            return generateProjectPage(route.id);
 
         case "blog":
-            return {
-                type: "page",
-                title: "Blog",
-                sections: [
-                    {
-                        type: "blog-list"
-                    }
-                ]
-            };
+            return pages.blog;
 
         case "blog-post":
-            return {
-                type: "page",
-                title: route.slug,
-                sections: [
-                    {
-                        type: "blog-post",
-                        slug: route.slug
-                    }
-                ]
-            };
+            return generateBlogPostPage(route.slug);
 
         case "uses":
-            return {
-                type: "page",
-                title: "Uses",
-                sections: [
-                    {
-                        type: "uses"
-                    }
-                ]
-            };
+            return pages.uses;
 
         case "contact":
-            return {
-                type: "page",
-                title: "Contact",
-                sections: [
-                    {
-                        type: "contact"
-                    }
-                ]
-            };
+            return pages.contact;
 
         default:
             return {
@@ -104,4 +39,63 @@ export function generator(route) {
                 ]
             };
     }
+}
+
+
+function generateProjectsPage() {
+    return {
+        type: "page",
+        title: pages.projects.title,
+
+        sections: [
+            {
+                type: "project-list",
+                projects: Object.keys(projects)
+            }
+        ]
+    };
+}
+
+
+function generateProjectPage(id) {
+    const project = projects[id];
+
+    if (!project) {
+        return {
+            type: "page",
+            title: "404",
+            sections: [
+                {
+                    type: "404"
+                }
+            ]
+        };
+    }
+
+    return {
+        type: "page",
+        title: project.title,
+
+        sections: [
+            {
+                type: "project",
+                id
+            }
+        ]
+    };
+}
+
+
+function generateBlogPostPage(slug) {
+    return {
+        type: "page",
+        title: slug,
+
+        sections: [
+            {
+                type: "blog-post",
+                slug
+            }
+        ]
+    };
 }
