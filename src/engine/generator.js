@@ -1,6 +1,9 @@
 import { pages } from "../content/pages.js";
 import { projects } from "../content/projects.js";
-
+import {
+    getPost,
+    getPostList
+} from "../content/blog/index.js";
 
 export function generator(route) {
     switch (route.name) {
@@ -87,14 +90,29 @@ function generateProjectPage(id) {
 
 
 function generateBlogPostPage(slug) {
+    const post = getPost(slug);
+
+    if (!post) {
+        return {
+            type: "page",
+            title: "404",
+
+            sections: [
+                {
+                    type: "404"
+                }
+            ]
+        };
+    }
+
     return {
         type: "page",
-        title: slug,
+        title: post.title,
 
         sections: [
             {
                 type: "blog-post",
-                slug
+                post
             }
         ]
     };

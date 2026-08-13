@@ -10,6 +10,16 @@ import {
 
 import { projects } from "../content/projects.js";
 
+import {
+    Hero,
+    TextSection,
+    ProjectList,
+    Project,
+    BlogList,
+    BlogPost,
+    NotFound
+} from "./components.js";
+
 
 export function renderer(page, app) {
     app.innerHTML = "";
@@ -51,6 +61,14 @@ function renderSection(section, parent) {
 
             break;
         }
+
+        case "blog-list":
+            parent.append(BlogList(section));
+            break;
+
+        case "blog-post":
+            parent.append(BlogPost(section));
+            break;
 
         case "404":
             parent.append(NotFound());

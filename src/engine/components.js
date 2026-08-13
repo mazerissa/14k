@@ -134,15 +134,63 @@ export function NotFound() {
     return sectionElement;
 }
 
+export function BlogList(section) {
+    const container = element("section", "blog-list");
 
-export function NotFound() {
-    const section = element("section", "not-found");
+    for (const post of section.posts) {
+        const article = element("article", "blog-card");
 
-    const heading = text("h2", "404");
+        const heading = text("h2", post.title);
 
-    const message = text("p", "Page not found.");
+        const date = text("time", post.date);
 
-    append(section, heading, message);
+        const link = document.createElement("a");
 
-    return section;
+        link.href = `/blog/${post.slug}`;
+        link.textContent = "Read";
+
+        append(
+            article,
+            heading,
+            date,
+            link
+        );
+
+        container.append(article);
+    }
+
+    return container;
 }
+
+export function BlogPost(section) {
+    const article = element("article", "blog-post");
+
+    const heading = text("h1", section.post.title);
+
+    const date = text("time", section.post.date);
+
+    append(article, heading, date);
+
+    for (const block of section.post.content) {
+        renderBlogBlock(block, article);
+    }
+
+    return article;
+}
+
+export function BlogPost(section) {
+    const article = element("article", "blog-post");
+
+    const heading = text("h1", section.post.title);
+
+    const date = text("time", section.post.date);
+
+    append(article, heading, date);
+
+    for (const block of section.post.content) {
+        renderBlogBlock(block, article);
+    }
+
+    return article;
+}
+
