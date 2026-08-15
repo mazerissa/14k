@@ -23,13 +23,10 @@ import {
     POSTS
 } from "./data.js";
 
-
 import {
     maxEquation
 } from "./math.js";
 
-
-import "./style.css";
 
 
 // ============================================================
