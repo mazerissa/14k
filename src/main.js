@@ -1,25 +1,104 @@
 import{site,about,projects,links}from"./data.js";
-import{D,B}from"./generated-blog.js";
+import{d,b}from"./generated-blog.js";
 
 const app=document.querySelector("#app");
 
-const dec=s=>s?s.replace(/~(\d+)~/g,(_,i)=>D[i]??""):"";
+const A="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 
-const md=s=>s
+const dec=s=>{
+ if(!s)return"";
+
+ return s.replace(
+  /~([A-Za-z0-9_-]+)/g,
+  (_,x)=>{
+   let n=0;
+
+   for(const c of x)
+    n=n*A.length+A.indexOf(c)+1;
+
+   return d[n-1]||"";
+  }
+ );
+};
+
+const md=s=>{
+
+ const lines=s
+  .replace(/\r/g,"")
+  .split("\n");
+
+ const out=[];
+ let list=false;
+
+ for(const line of lines){
+
+  if(!line.trim()){
+   if(list){
+    out.push("</ul>");
+    list=false;
+   }
+   continue;
+  }
+
+  if(line.startsWith("- ")){
+
+   if(!list){
+    out.push("<ul>");
+    list=true;
+   }
+
+   out.push(
+    "<li>"+inline(line.slice(2))+"</li>"
+   );
+
+   continue;
+  }
+
+  if(list){
+   out.push("</ul>");
+   list=false;
+  }
+
+  if(line.startsWith("### "))
+   out.push("<h3>"+inline(line.slice(4))+"</h3>");
+  else if(line.startsWith("## "))
+   out.push("<h2>"+inline(line.slice(3))+"</h2>");
+  else if(line.startsWith("# "))
+   out.push("<h1>"+inline(line.slice(2))+"</h1>");
+  else
+   out.push("<p>"+inline(line)+"</p>");
+ }
+
+ if(list)out.push("</ul>");
+
+ return out.join("");
+};
+
+const inline=s=>
+ s
  .replace(/&/g,"&amp;")
  .replace(/</g,"&lt;")
  .replace(/>/g,"&gt;")
- .replace(/^### (.*)$/gm,"<h3>$1</h3>")
- .replace(/^## (.*)$/gm,"<h2>$1</h2>")
- .replace(/^# (.*)$/gm,"<h1>$1</h1>")
- .replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
- .replace(/\*(.*?)\*/g,"<em>$1</em>")
- .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
-  '<a href="$2" target="_blank" rel="noopener">$1</a>')
- .replace(/\n\n+/g,"</p><p>")
- .replace(/^(.+)$/gm,"<p>$1</p>");
+ .replace(
+  /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
+  '<a href="$2" target="_blank" rel="noopener">$1</a>'
+ )
+ .replace(
+  /\*\*(.*?)\*\*/g,
+  "<strong>$1</strong>"
+ )
+ .replace(
+  /\*(.*?)\*/g,
+  "<em>$1</em>"
+ );
 
-const ext=(u,t)=>`<a href="${u}"${/^https?:/.test(u)?' target="_blank" rel="noopener"':""}>${t}</a>`;
+const link=(url,text)=>{
+ const x=/^https?:\/\//.test(url)
+  ?' target="_blank" rel="noopener"'
+  :"";
+
+ return `<a href="${url}"${x}>${text}</a>`;
+};
 
 const header=()=>`
 <header>
@@ -29,7 +108,8 @@ const header=()=>`
 <a href="/about">ABOUT</a>
 <a href="/blog">BLOG</a>
 </nav>
-</header>`;
+</header>
+`;
 
 const projectsPage=()=>`
 <section>
@@ -40,48 +120,71 @@ ${projects.map(p=>`
 <span>${p.name}</span>
 <span class="muted">${p.description}</span>
 <span>→</span>
-</a>`).join("")}
+</a>
+`).join("")}
 </div>
-</section>`;
+</section>
+`;
 
 const projectPage=id=>{
+
  const p=projects.find(x=>x.id===id);
- return p?`
+
+ if(!p)return notFound();
+
+ return`
 <section class="project">
 <h1>${p.name}</h1>
 <p class="muted">${p.description}</p>
-<img class="project-image" src="${p.image}" alt="${p.name}">
-<p>${ext(p.github,"GitHub ↗")}</p>
-</section>`:nf();
+<img
+ class="project-image"
+ src="${p.image}"
+ alt="${p.name}"
+>
+<p>${link(p.github,"GitHub ↗")}</p>
+</section>
+`;
 };
 
 const aboutPage=()=>`
 <section>
 <h2>ABOUT</h2>
 <p>${about}</p>
-</section>`;
+</section>
+`;
 
 const blogPage=()=>`
 <section>
 <h2>BLOG</h2>
 <div class="list">
-${Object.entries(B).map(([s,p])=>`
+${Object.entries(b).map(([s,p])=>`
 <a class="row" href="/blog/${s}">
-<span>${p.title}</span>
-<span class="muted">${p.date}</span>
+<span>${p[0]}</span>
+<span class="muted">${p[1]}</span>
 <span>→</span>
-</a>`).join("")}
+</a>
+`).join("")}
 </div>
-</section>`;
+</section>
+`;
 
-const postPage=s=>{
- const p=B[s];
- if(!p)return nf();
+const postPage=slug=>{
+
+ const p=b[slug];
+
+ if(!p)return notFound();
+
+ const text=
+  p[2][0]==="."
+   ?p[2].slice(1)
+   :dec(p[2]);
+
  return`
 <article class="post">
-<div class="post-date">${p.date}</div>
-${md(p.c!==null?dec(p.c):p.u)}
-</article>`;
+<div class="post-date">${p[1]}</div>
+${md(text)}
+</article>
+`;
 };
 
 const home=()=>`
@@ -90,31 +193,40 @@ const home=()=>`
 <p class="muted">${site.description}</p>
 </section>
 ${projectsPage()}
-${blogPage()}`;
+${blogPage()}
+`;
 
-const nf=()=>`
+const notFound=()=>`
 <section>
 <h1 class="small-title">404</h1>
 <p class="muted">Page not found.</p>
-</section>`;
+</section>
+`;
 
 const route=p=>{
+
  if(p==="/")return home();
  if(p==="/projects")return projectsPage();
  if(p==="/about")return aboutPage();
  if(p==="/blog")return blogPage();
 
  let m=p.match(/^\/projects\/([^/]+)$/);
+
  if(m)return projectPage(m[1]);
 
  m=p.match(/^\/blog\/([^/]+)$/);
+
  if(m)return postPage(m[1]);
 
- return nf();
+ return notFound();
 };
 
 const render=()=>{
- const p=location.pathname.replace(/\/+$/,"")||"/";
+
+ const p=
+  location.pathname
+   .replace(/\/+$/,"")||"/";
+
  app.innerHTML=`
 <main>
 ${header()}
@@ -122,20 +234,32 @@ ${route(p)}
 <footer>
 <span>${site.name} / ${site.year}</span>
 <div class="footer-links">
-${links.map(x=>ext(x.url,x.name+" ↗")).join("")}
+${links.map(x=>link(x.url,x.name+" ↗")).join("")}
 </div>
 </footer>
-</main>`;
+</main>
+`;
 };
 
 document.addEventListener("click",e=>{
+
  const a=e.target.closest("a");
- if(!a||a.target==="_blank"||a.origin!==location.origin)return;
+
+ if(
+  !a||
+  a.target==="_blank"||
+  a.origin!==location.origin
+ )return;
+
  e.preventDefault();
+
  history.pushState({},"",a.pathname);
+
  render();
+
  scrollTo(0,0);
 });
 
 addEventListener("popstate",render);
+
 render();

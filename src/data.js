@@ -1,11 +1,11 @@
 export const site={
  name:"YOUCEF",
- description:"I BUILD THINGS...",
+ description:"Software / Hardware / Math",
  year:2026
 };
 
 export const about=
-"Tenn who loves tech";
+"I build software, electronics and mathematical systems.";
 
 export const projects=[
  {
@@ -13,7 +13,7 @@ export const projects=[
   name:"14K",
   description:"Generative website",
   image:"/assets/projects/14k.webp",
-  github:"https://github.com/YOUR_USERNAME/14k"
+  github:"https://github.com/mazerissa/14k"
  },
  {
   id:"02",
