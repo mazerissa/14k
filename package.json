@@ -1,0 +1,8 @@
+{
+  "type":"module",
+  "scripts":{
+    "new-post":"node tools/new-post.mjs",
+    "blog":"node tools/compress.mjs",
+    "dev":"python -m http.server 8000"
+  }
+}
