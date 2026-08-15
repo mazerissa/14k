@@ -1,36 +1,13 @@
-export const site={
- name:"YOUCEF",
- description:"Software / Hardware / Math",
- year:2026
-};
+export const site=["YOUCEF","Software / Hardware / Math",2026];
 
-export const about=
-"I build software, electronics and mathematical systems.";
+export const about="I build software, electronics and mathematical systems.";
 
 export const projects=[
- {
-  id:"01",
-  name:"14K",
-  description:"Generative website",
-  image:"/assets/projects/14k.webp",
-  github:"https://github.com/mazerissa/14k"
- },
- {
-  id:"02",
-  name:"CHIP-8",
-  description:"Emulator",
-  image:"/assets/projects/chip8.webp",
-  github:"https://github.com/mazerissa/chip8-emulator"
- }
+ ["01","14K","Generative website","/assets/projects/14k.webp","https://github.com/mazrissa/14k"],
+ ["02","CHIP-8","Emulator","/assets/projects/chip8.webp","https://github.com/mazrissa/chip8-emulator"],
 ];
 
 export const links=[
- {
-  name:"GitHub",
-  url:"https://github.com/mazerissa"
- },
- {
-  name:"Email",
-  url:"mailto:elghoul.youcef01@gmail.com"
- }
+ ["GitHub","https://github.com/mazrissa"],
+ ["Email","mailto:elghoul.youcef01@gmail.com"]
 ];

@@ -1,12 +1,15 @@
 import{site,about,projects,links}from"./data.js";
 import{d,b}from"./generated-blog.js";
+
 const app=document.querySelector("#app"),
  A="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+
 const dec=s=>s.replace(/~([A-Za-z0-9_-]+)/g,(_,x)=>{
  let n=0;
  for(const c of x)n=n*64+A.indexOf(c)+1;
  return d[n-1]||"";
 });
+
 const inl=s=>s
  .replace(/&/g,"&amp;")
  .replace(/</g,"&lt;")
@@ -15,16 +18,18 @@ const inl=s=>s
   '<a href="$2" target="_blank" rel="noopener">$1</a>')
  .replace(/\*\*(.*?)\*\*/g,"<b>$1</b>")
  .replace(/\*(.*?)\*/g,"<i>$1</i>");
-const md=s=>s
- .split(/\n+/)
- .map(x=>{
-  if(x[0]==="#")return`<h${x.match(/^#+/)[0].length}>${inl(x.replace(/^#+\s*/,""))}</h${x.match(/^#+/)[0].length}>`;
-  if(x.startsWith("- "))return`<li>${inl(x.slice(2))}</li>`;
-  return`<p>${inl(x)}</p>`;
- })
- .join("")
- .replace(/(<li>.*?<\/li>)+/g,x=>`<ul>${x}</ul>`);
+
+const md=s=>s.split(/\n+/).map(x=>{
+ if(x[0]==="#"){
+  const n=x.match(/^#+/)[0].length;
+  return`<h${n}>${inl(x.replace(/^#+\s*/,""))}</h${n}>`;
+ }
+ if(x.startsWith("- "))return`<li>${inl(x.slice(2))}</li>`;
+ return`<p>${inl(x)}</p>`;
+}).join("").replace(/(<li>.*?<\/li>)+/g,x=>`<ul>${x}</ul>`);
+
 const ext=(u,t)=>`<a href="${u}"${/^https?:/.test(u)?' target="_blank" rel="noopener"':""}>${t}</a>`;
+
 const header=`
 <header>
 <a class="logo" href="/">YE</a>
@@ -34,6 +39,7 @@ const header=`
 <a href="/blog">BLOG</a>
 </nav>
 </header>`;
+
 const rows=a=>`
 <div class="list">
 ${a.map(x=>`
@@ -43,34 +49,36 @@ ${a.map(x=>`
 <span>→</span>
 </a>`).join("")}
 </div>`;
+
 const projectsPage=()=>`
 <section>
 <h2>PROJECTS</h2>
 ${rows(projects.map(p=>[
- `/projects/${p.id}`,
- p.name,
- p.description
+ `/projects/${p[0]}`,
+ p[1],
+ p[2]
 ]))}
 </section>`;
+
 const projectPage=id=>{
- const p=projects.find(x=>x.id===id);
+ const p=projects.find(x=>x[0]===id);
  return p?`
 <section class="project">
-<h1>${p.name}</h1>
-<p class="muted">${p.description}</p>
-<img class="project-image" src="${p.image}" alt="${p.name}">
-<p>${ext(p.github,"GitHub ↗")}</p>
+<h1>${p[1]}</h1>
+<p class="muted">${p[2]}</p>
+<img class="project-image" src="${p[3]}" alt="${p[1]}">
+<p>${ext(p[4],"GitHub ↗")}</p>
 </section>`:nf();
 };
+
 const blogPage=()=>`
 <section>
 <h2>BLOG</h2>
 ${rows(Object.entries(b).map(([s,p])=>[
- `/blog/${s}`,
- p[0],
- p[1]
+ `/blog/${s}`,p[0],p[1]
 ]))}
 </section>`;
+
 const postPage=id=>{
  const p=b[id];
  if(!p)return nf();
@@ -81,45 +89,55 @@ const postPage=id=>{
 ${md(s)}
 </article>`;
 };
+
 const aboutPage=()=>`
 <section>
 <h2>ABOUT</h2>
 <p>${about}</p>
 </section>`;
+
 const home=()=>`
 <section class="hero">
-<h1>${site.name}</h1>
-<p class="muted">${site.description}</p>
+<h1>${site[0]}</h1>
+<p class="muted">${site[1]}</p>
 </section>
 ${projectsPage()}
 ${blogPage()}`;
+
 const nf=()=>`
 <section>
 <h1 class="small-title">404</h1>
 <p class="muted">Page not found.</p>
 </section>`;
+
 const route=p=>{
  if(p==="/")return home();
  if(p==="/projects")return projectsPage();
  if(p==="/about")return aboutPage();
  if(p==="/blog")return blogPage();
+
  let m=p.match(/^\/projects\/(.+)$/);
  if(m)return projectPage(m[1]);
+
  m=p.match(/^\/blog\/(.+)$/);
  if(m)return postPage(m[1]);
+
  return nf();
 };
+
 const footer=`
 <footer>
-<span>${site.name} / ${site.year}</span>
+<span>${site[0]} / ${site[2]}</span>
 <div class="footer-links">
-${links.map(x=>ext(x.url,x.name+" ↗")).join("")}
+${links.map(x=>ext(x[1],x[0]+" ↗")).join("")}
 </div>
 </footer>`;
+
 const render=()=>{
  const p=location.pathname.replace(/\/+$/,"")||"/";
  app.innerHTML=`<main>${header}${route(p)}${footer}</main>`;
 };
+
 document.addEventListener("click",e=>{
  const a=e.target.closest("a");
  if(!a||a.target==="_blank"||a.origin!==location.origin)return;
@@ -128,5 +146,6 @@ document.addEventListener("click",e=>{
  render();
  scrollTo(0,0);
 });
+
 addEventListener("popstate",render);
 render();
